@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MovieDe – Honest Indian Movie Reviews</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #6c5ce7; /* violet */
+      --accent: #fdcb6e; /* yellow */
+      --bg: #faf9ff;
+      --card-bg: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 1.25rem;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    nav a:hover {
+      opacity: 0.8;
+    }
+    main {
+      max-width: 1280px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    /* Movie grid */
+    #movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+    .movie-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .movie-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    }
+    .movie-card img {
+      width: 100%;
+      display: block;
+    }
+    .movie-card .info {
+      padding: 0.75rem 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 160px;
+    }
+    .movie-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .imdb-rating {
+      font-size: 0.875rem;
+      color: var(--primary);
+      font-weight: 500;
+    }
+    .rate-btn {
+      margin-top: auto;
+      align-self: start;
+      padding: 0.4rem 0.75rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: background 0.2s ease;
+    }
+    .rate-btn:hover {
+      background: #5b4ad1;
+    }
+    /* Modal */
+    #rating-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #rating-modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 600px;
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+    .ratings-group label {
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    .ratings-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 1rem;
+      accent-color: var(--primary);
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      resize: vertical;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .submit-review {
+      display: inline-block;
+      padding: 0.6rem 1.25rem;
+      background: var(--accent);
+      border: none;
+      color: #333;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .submit-review:hover {
+      opacity: 0.9;
+    }
+    /* Review list */
+    .reviews {
+      margin-top: 1rem;
+    }
+    .review-item {
+      background: var(--bg);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+    @media (max-width: 600px) {
+      .movie-card .info {
+        height: auto;
+      }
+      .movie-card {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🎬 MovieDe</div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Home -->
+    <section id="home">
+      <h2 style="margin-bottom:1rem;">Recently Released in India</h2>
+      <div id="movie-grid"></div>
+    </section>
+
+    <!-- About -->
+    <section id="about" style="margin-top:4rem;">
+      <h2>About MovieDe</h2>
+      <p style="margin-top:0.75rem; max-width:700px;">
+        MovieDe is a community‑driven space where Indian movie lovers gather to share honest, spoiler‑free reviews. We combine up‑to‑the‑second IMDb™ ratings with our unique <strong>People Rating Matrix</strong> covering ten aspects—from Action and Romance to BGM and Choreography—so you always know which film is worth your ticket money.
+      </p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" style="margin-top:4rem; margin-bottom:4rem;">
+      <h2>Contact Us</h2>
+      <p style="margin-top:0.75rem;">Have feedback or partnership inquiries? Write to <a href="mailto:hello@moviede.com">hello@moviede.com</a>.</p>
+    </section>
+  </main>
+
+  <!-- Rating Modal -->
+  <div id="rating-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-movie-title"></h3>
+        <button class="close-btn" id="close-modal">×</button>
+      </div>
+      <form id="rating-form">
+        <div class="ratings-group" id="ratings-inputs"></div>
+        <label for="user-review">Your Review (optional)</label>
+        <textarea id="user-review" placeholder="Write a short review..."></textarea>
+        <button type="submit" class="submit-review">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    /*****************************************************
+     * CONFIG – Replace with your own TMDB API key      *
+     *****************************************************/
+    const TMDB_API_KEY = "PASTE_YOUR_TMDB_API_KEY_HERE"; // 🔑 Get one free at https://www.themoviedb.org/
+
+    /*****************************************************
+     * Global Constants & Helpers                       *
+     *****************************************************/
+    const IMG_BASE = "https://image.tmdb.org/t/p/w342";
+    const CATEGORY_LABELS = [
+      "Action",
+      "Thriller & Suspense",
+      "Adult",
+      "Romance & Love",
+      "Comedy",
+      "Violence",
+      "Not for family",
+      "Music & BGM",
+      "Camera Work",
+      "Choreography",
+    ];
+
+    const grid = document.getElementById("movie-grid");
+    const modal = document.getElementById("rating-modal");
+    const ratingInputsContainer = document.getElementById("ratings-inputs");
+    const modalTitle = document.getElementById("modal-movie-title");
+    const ratingForm = document.getElementById("rating-form");
+    const userReviewInput = document.getElementById("user-review");
+    let currentMovie = null;
+
+    /*****************************************************
+     * Fetch & Render Movies                            *
+     *****************************************************/
+    async function fetchLatestIndianMovies() {
+      try {
+        const url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-IN&region=IN&page=1`;
+        const res = await fetch(url);
+        const data = await res.json();
+        renderMovies(data.results);
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = "<p>Unable to load movies. Check your API key or internet connection.</p>";
+      }
+    }
+
+    function renderMovies(movies) {
+      grid.innerHTML = "";
+      movies.forEach((movie) => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        const poster = movie.poster_path ? IMG_BASE + movie.poster_path : "https://placehold.co/342x513?text=No+Image";
+        card.innerHTML = `
+          <img src="${poster}" alt="${movie.title}">
+          <div class="info">
+            <div>
+              <h3 class="movie-title">${movie.title}</h3>
+              <p class="imdb-rating">TMDB: ${movie.vote_average.toFixed(1)}</p>
+            </div>
+            <button class="rate-btn">Rate</button>
+          </div>
+        `;
+
+        // Show stored average people rating if available
+        const localData = getStoredMovieData(movie.id);
+        if (localData && localData.avg) {
+          const ratingBadge = document.createElement("span");
+          ratingBadge.textContent = `People: ${localData.avg.toFixed(1)}/10`;
+          ratingBadge.style.cssText = "position:absolute;top:8px;right:8px;background:var(--accent);color:#333;padding:0 6px;border-radius:6px;font-size:0.75rem;font-weight:700;";
+          card.appendChild(ratingBadge);
+        }
+
+        card.querySelector(".rate-btn").addEventListener("click", () => openModal(movie));
+        grid.appendChild(card);
+      });
+    }
+
+    /*****************************************************
+     * Modal Logic                                      *
+     *****************************************************/
+    function openModal(movie) {
+      currentMovie = movie;
+      modalTitle.textContent = movie.title;
+      modal.classList.add("active");
+      generateRatingSliders();
+      const stored = getStoredMovieData(movie.id);
+      // Prefill if user already rated
+      ratingInputsContainer.querySelectorAll("input[type='range']").forEach((input, idx) => {
+        input.value = stored?.ratings ? stored.ratings[idx] : 5;
+      });
+      userReviewInput.value = stored?.review || "";
+    }
+
+    document.getElementById("close-modal").addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+
+    function generateRatingSliders() {
+      ratingInputsContainer.innerHTML = CATEGORY_LABELS.map((cat, idx) => {
+        return `
+          <label for="cat-${idx}">${idx + 1}. ${cat}</label>
+          <input id="cat-${idx}" type="range" min="1" max="10" step="1" value="5" />
+        `;
+      }).join("");
+    }
+
+    /*****************************************************
+     * Data Storage (localStorage)                      *
+     *****************************************************/
+    function getStoredMovieData(movieId) {
+      const raw = localStorage.getItem(`moviede_${movieId}`);
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function saveMovieData(movieId, data) {
+      localStorage.setItem(`moviede_${movieId}`, JSON.stringify(data));
+    }
+
+    /*****************************************************
+     * Form Submission                                  *
+     *****************************************************/
+    ratingForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!currentMovie) return;
+      const ratings = ratingInputsContainer.querySelectorAll("input[type='range']");
+      const values = Array.from(ratings).map((r) => Number(r.value));
+      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      const reviewText = userReviewInput.value.trim();
+      saveMovieData(currentMovie.id, { ratings: values, avg, review: reviewText });
+      modal.classList.remove("active");
+      fetchLatestIndianMovies(); // Refresh to show updated badge
+    });
+
+    /*****************************************************
+     * Init                                             *
+     *****************************************************/
+    fetchLatestIndianMovies();
+  </script>
+</body>
+</html>
